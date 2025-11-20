@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SMART · Instagram Creator Connect Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-card: #020617;
+      --bg-soft: #020617;
+      --border: #1f2937;
+      --accent: #4f46e5;
+      --accent-soft: rgba(79, 70, 229, 0.25);
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --shadow: 0 18px 40px rgba(15, 23, 42, 0.8);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #0f172a, #020617 55%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 1100px;
+      border-radius: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: linear-gradient(135deg, rgba(15,23,42,1), rgba(15,23,42,0.95));
+      box-shadow: var(--shadow);
+      padding: 20px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .shell {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 16px;
+      }
+    }
+
+    .panel {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at top left, #020617, #020617);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 18px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .title-block p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      border: 1px solid rgba(74, 222, 128, 0.7);
+      background: rgba(22, 163, 74, 0.15);
+      font-size: 11px;
+      color: #bbf7d0;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.4);
+    }
+
+    .step-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #6b7280;
+    }
+
+    .card {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at top left, #020617, #020617);
+      padding: 10px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #9ca3af;
+    }
+
+    .code-pill {
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 3px 8px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      white-space: nowrap;
+    }
+
+    .description {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      border-radius: 999px;
+      padding: 8px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #020617;
+      color: var(--text);
+      border: 1px solid #374151;
+      transition: background 0.12s ease, border-color 0.12s ease, transform 0.06s ease, box-shadow 0.12s ease;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      border-color: transparent;
+      box-shadow: 0 10px 24px rgba(79, 70, 229, 0.7);
+    }
+
+    button.primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(79, 70, 229, 0.85);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: default;
+      transform: none;
+      box-shadow: none;
+    }
+
+    button.secondary {
+      background: rgba(15, 23, 42, 0.95);
+      border-color: #4b5563;
+    }
+
+    button.secondary:hover:not(:disabled) {
+      background: #111827;
+    }
+
+    .btn-icon {
+      font-size: 14px;
+    }
+
+    .status-pill {
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 3px 10px;
+      border: 1px solid #4b5563;
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #6b7280;
+    }
+
+    .dot.connected {
+      background: #22c55e;
+    }
+
+    .step-indicator {
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 3px 10px;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    .accounts-list {
+      margin-top: 6px;
+      max-height: 210px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 3px;
+    }
+
+    .empty-box {
+      margin-top: 6px;
+      border-radius: 10px;
+      border: 1px dashed #4b5563;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 9px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .account-card {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 9px;
+      border-radius: 10px;
+      border: 1px solid #374151;
+      background: #020617;
+      cursor: pointer;
+      transition: background 0.12s ease, border-color 0.12s ease, transform 0.06s ease;
+    }
+
+    .account-card:hover {
+      background: rgba(30, 64, 175, 0.35);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .account-card.selected {
+      background: rgba(37, 99, 235, 0.3);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-soft);
+    }
+
+    .account-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background-size: cover;
+      background-position: center;
+      border: 1px solid #6b7280;
+      flex-shrink: 0;
+    }
+
+    .account-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .account-username {
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      font-size: 10px;
+      border-radius: 999px;
+      padding: 2px 7px;
+      border: 1px solid #6b7280;
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+    }
+
+    .account-page {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .hint-text strong {
+      color: #e5e7eb;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pill-soft {
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 3px 10px;
+      border: 1px solid #4b5563;
+      background: rgba(15, 23, 42, 0.95);
+      color: #e5e7eb;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .creator-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .creator-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background-size: cover;
+      background-position: center;
+      border: 1px solid #6b7280;
+      flex-shrink: 0;
+    }
+
+    .creator-name {
+      font-size: 12px;
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .posts-grid {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 3px;
+    }
+
+    .post-card {
+      border-radius: 11px;
+      border: 1px solid #374151;
+      background: #020617;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: border-color 0.12s ease, box-shadow 0.12s ease, transform 0.06s ease;
+    }
+
+    .post-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 9px 22px rgba(15, 23, 42, 0.9);
+      transform: translateY(-2px);
+    }
+
+    .post-media {
+      position: relative;
+      width: 100%;
+      padding-top: 100%;
+      background-size: cover;
+      background-position: center;
+      background-color: #111827;
+    }
+
+    .post-type-pill {
+      position: absolute;
+      left: 7px;
+      top: 7px;
+      border-radius: 999px;
+      padding: 2px 7px;
+      border: 1px solid #6b7280;
+      background: rgba(15, 23, 42, 0.85);
+      font-size: 10px;
+      color: #e5e7eb;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .post-body {
+      padding: 7px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .post-caption {
+      font-size: 11px;
+      color: #e5e7eb;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .post-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .post-link {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .footnote {
+      border-top: 1px solid #020617;
+      padding-top: 6px;
+      margin-top: 4px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .log {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #9ca3af;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+
+    .log-line {
+      display: flex;
+      gap: 5px;
+    }
+
+    .log-bullet {
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.9);
+      margin-top: 4px;
+    }
+
+    .log-text { color: #9ca3af; }
+    .log-text.ok { color: #bbf7d0; }
+    .log-text.warn { color: #fde68a; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <!-- LEFT: connect + account selection -->
+    <div class="panel">
+      <div class="header-row">
+        <div class="title-block">
+          <h1>SMART · Instagram Connect Demo</h1>
+          <p>Creator onboarding flow using mock data (frontend-only).</p>
+        </div>
+        <div class="badge">
+          <span class="badge-dot"></span>
+          <span>Demo mode · No backend</span>
+        </div>
+      </div>
+
+      <div class="step-label">Step 1 · Connect with Facebook (simulated)</div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Facebook Login</div>
+          <div class="status-pill">
+            <span class="dot" id="statusDot"></span>
+            <span id="statusLabel">Not connected</span>
+          </div>
+        </div>
+        <div class="description">
+          In the real app, this button will send the creator to the Meta OAuth dialog
+          with <code>pages_show_list</code> and <code>instagram_basic</code>. For this demo,
+          we simulate a successful login and skip the backend work.
+        </div>
+        <button class="primary" id="btnConnect">
+          <span class="btn-icon">🔗</span>
+          <span id="btnConnectLabel">Connect with Facebook</span>
+        </button>
+        <p class="hint-text">
+          Later this will call <code>/api/instagram/connect/start</code> and your
+          backend will handle the OAuth callback and long-lived tokens.
+        </p>
+      </div>
+
+      <div class="step-label">Step 2 · Select your Instagram Business / Creator account</div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Pages & Linked Instagram Accounts</div>
+          <span class="code-pill" id="accountsCount">0 accounts</span>
+        </div>
+        <div class="description">
+          After OAuth, SMART will call the Graph API to find which Facebook Pages you
+          manage and which Instagram Professional accounts are linked to them. Here
+          we show the same UI using mock data.
+        </div>
+
+        <div class="accounts-list" id="accountsList"></div>
+        <div class="hint-text" id="selectionHint">
+          Connect first, then pick an account.
+        </div>
+      </div>
+
+      <div class="log" id="log"></div>
+    </div>
+
+    <!-- RIGHT: posts preview -->
+    <div class="panel">
+      <div class="header-row">
+        <div class="title-block">
+          <h1>Preview · Instagram posts in SMART</h1>
+          <p>Read-only view of posts, similar to the For You feed.</p>
+        </div>
+        <div class="step-indicator" id="stepIndicator">
+          <span>Step 1 · Connect</span>
+        </div>
+      </div>
+
+      <div class="step-label">Step 3 · Preview synced posts (mocked)</div>
+
+      <div class="card">
+        <div class="preview-header">
+          <div class="card-title">Latest posts</div>
+          <span class="pill-soft">
+            <span>🔒</span> Read-only · No publishing
+          </span>
+        </div>
+        <div class="description">
+          In production, this panel will be powered by posts cached in SMART’s
+          database from the Instagram Graph API. For the demo, we load a static set
+          of posts to show the UX for Meta reviewers and internal stakeholders.
+        </div>
+
+        <div id="creatorHeader"></div>
+        <div id="postsEmpty" class="empty-box">
+          <strong>No account selected yet.</strong><br />
+          Connect and choose a mock Instagram account on the left to see how posts
+          will appear here.
+        </div>
+        <div id="postsGrid" class="posts-grid" style="display: none;"></div>
+      </div>
+
+      <div class="footnote">
+        For the real integration, we’ll replace the mock data with:
+        <code>GET /api/instagram/pages-and-accounts</code> and
+        <code>GET /api/for-you/instagram</code>. This HTML file is enough to
+        record an App Review demo: connect (simulated), pick an account, and show
+        the posts preview.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---- MOCK DATA ----
+    const MOCK_ACCOUNTS = [
+      {
+        page_id: "1234567890",
+        page_name: "SMART Demo Health Page",
+        instagram_business_id: "17800000000000001",
+        instagram_username: "smart_demo_creator",
+        profile_picture_url: "https://via.placeholder.com/80"
+      },
+      {
+        page_id: "9876543210",
+        page_name: "Women’s Health Clinic (Demo)",
+        instagram_business_id: "17800000000000002",
+        instagram_username: "womens_health_demo",
+        profile_picture_url: "https://via.placeholder.com/80/4f46e5/ffffff"
+      }
+    ];
+
+    const MOCK_POSTS = [
+      {
+        id: "1",
+        media_url: "https://via.placeholder.com/600x600",
+        caption: "Why sleep is medicine: 3 evidence-based tips for better recovery. 😴",
+        timestamp: "2025-01-01T12:00:00Z",
+        media_type: "IMAGE",
+        permalink: "https://instagram.com/p/mock1",
+        username: "smart_demo_creator"
+      },
+      {
+        id: "2",
+        media_url: "https://via.placeholder.com/600x600/0f172a/ffffff",
+        caption: "Plate-building 101: what a balanced meal actually looks like. 🥗",
+        timestamp: "2025-01-03T09:30:00Z",
+        media_type: "IMAGE",
+        permalink: "https://instagram.com/p/mock2",
+        username: "smart_demo_creator"
+      },
+      {
+        id: "3",
+        media_url: "https://via.placeholder.com/600x600/1f2937/ffffff",
+        caption: "PCOS, hormones, and nutrition – a 60-second breakdown.",
+        timestamp: "2025-01-05T18:45:00Z",
+        media_type: "VIDEO",
+        permalink: "https://instagram.com/p/mock3",
+        username: "smart_demo_creator"
+      }
+    ];
+
+    // ---- STATE ----
+    let isConnected = false;
+    let accounts = [];
+    let selectedAccount = null;
+
+    // ---- DOM ----
+    const statusDot = document.getElementById("statusDot");
+    const statusLabel = document.getElementById("statusLabel");
+    const btnConnect = document.getElementById("btnConnect");
+    const btnConnectLabel = document.getElementById("btnConnectLabel");
+    const accountsListEl = document.getElementById("accountsList");
+    const accountsCountEl = document.getElementById("accountsCount");
+    const selectionHintEl = document.getElementById("selectionHint");
+    const logEl = document.getElementById("log");
+    const stepIndicatorEl = document.getElementById("stepIndicator");
+    const postsGridEl = document.getElementById("postsGrid");
+    const postsEmptyEl = document.getElementById("postsEmpty");
+    const creatorHeaderEl = document.getElementById("creatorHeader");
+
+    // ---- HELPERS ----
+    function log(message, type) {
+      const line = document.createElement("div");
+      line.className = "log-line";
+      const bullet = document.createElement("div");
+      bullet.className = "log-bullet";
+      const text = document.createElement("div");
+      text.className = "log-text";
+      if (type === "ok") text.classList.add("ok");
+      if (type === "warn") text.classList.add("warn");
+      text.textContent = message;
+      line.appendChild(bullet);
+      line.appendChild(text);
+      logEl.appendChild(line);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function setStepLabel(step) {
+      switch (step) {
+        case 1:
+          stepIndicatorEl.innerHTML = "<span>Step 1 · Connect</span>";
+          break;
+        case 2:
+          stepIndicatorEl.innerHTML = "<span>Step 2 · Select account</span>";
+          break;
+        case 3:
+          stepIndicatorEl.innerHTML = "<span>Step 3 · Preview posts</span>";
+          break;
+      }
+    }
+
+    function updateConnectionUI() {
+      if (isConnected) {
+        statusDot.classList.add("connected");
+        statusLabel.textContent = "Connected (demo)";
+        btnConnectLabel.textContent = "Reconnect (demo)";
+      } else {
+        statusDot.classList.remove("connected");
+        statusLabel.textContent = "Not connected";
+        btnConnectLabel.textContent = "Connect with Facebook";
+      }
+    }
+
+    function renderAccounts() {
+      accountsListEl.innerHTML = "";
+      accountsCountEl.textContent = accounts.length + " account" + (accounts.length === 1 ? "" : "s");
+      if (!accounts.length) {
+        const div = document.createElement("div");
+        div.className = "empty-box";
+        div.textContent = "No Pages with linked Instagram Business/Creator accounts (mock).";
+        accountsListEl.appendChild(div);
+        return;
+      }
+
+      accounts.forEach((acct) => {
+        const card = document.createElement("div");
+        card.className = "account-card";
+        if (selectedAccount && selectedAccount.instagram_business_id === acct.instagram_business_id) {
+          card.classList.add("selected");
+        }
+
+        const avatar = document.createElement("div");
+        avatar.className = "account-avatar";
+        avatar.style.backgroundImage = "url('" + acct.profile_picture_url + "')";
+
+        const body = document.createElement("div");
+        body.className = "account-body";
+
+        const usernameRow = document.createElement("div");
+        usernameRow.className = "account-username";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = "@" + acct.instagram_username;
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = "Instagram Business";
+        usernameRow.appendChild(nameSpan);
+        usernameRow.appendChild(tag);
+
+        const pageLine = document.createElement("div");
+        pageLine.className = "account-page";
+        pageLine.textContent = "Page: " + acct.page_name;
+
+        body.appendChild(usernameRow);
+        body.appendChild(pageLine);
+
+        card.appendChild(avatar);
+        card.appendChild(body);
+
+        card.addEventListener("click", function () {
+          selectedAccount = acct;
+          renderAccounts();
+          renderPosts();
+          selectionHintEl.textContent =
+            "Connected as @" + acct.instagram_username + " (mock). In the real app, this selection would be sent to /api/instagram/connect/complete.";
+          setStepLabel(3);
+          log("Selected @" + acct.instagram_username + " (mock account).", "ok");
+        });
+
+        accountsListEl.appendChild(card);
+      });
+    }
+
+    function renderPosts() {
+      postsGridEl.innerHTML = "";
+      if (!selectedAccount) {
+        postsGridEl.style.display = "none";
+        postsEmptyEl.style.display = "block";
+        creatorHeaderEl.innerHTML = "";
+        return;
+      }
+
+      // Creator header
+      creatorHeaderEl.innerHTML = "";
+      const row = document.createElement("div");
+      row.className = "creator-row";
+      const avatar = document.createElement("div");
+      avatar.className = "creator-avatar";
+      avatar.style.backgroundImage = "url('" + selectedAccount.profile_picture_url + "')";
+      const textWrap = document.createElement("div");
+      const name = document.createElement("div");
+      name.className = "creator-name";
+      name.textContent = "@" + selectedAccount.instagram_username;
+      const sub = document.createElement("div");
+      sub.className = "hint-text";
+      sub.textContent = "Posts below are mock data, shaped like GET /api/for-you/instagram.";
+      textWrap.appendChild(name);
+      textWrap.appendChild(sub);
+      row.appendChild(avatar);
+      row.appendChild(textWrap);
+      creatorHeaderEl.appendChild(row);
+
+      postsEmptyEl.style.display = "none";
+      postsGridEl.style.display = "grid";
+
+      MOCK_POSTS.forEach((post) => {
+        const card = document.createElement("div");
+        card.className = "post-card";
+        card.addEventListener("click", function () {
+          if (post.permalink) {
+            window.open(post.permalink, "_blank", "noopener");
+          }
+        });
+
+        const media = document.createElement("div");
+        media.className = "post-media";
+        media.style.backgroundImage = "url('" + (post.thumbnail_url || post.media_url) + "')";
+
+        const typePill = document.createElement("div");
+        typePill.className = "post-type-pill";
+        typePill.textContent = post.media_type + " · @" + post.username;
+        media.appendChild(typePill);
+
+        const body = document.createElement("div");
+        body.className = "post-body";
+
+        const caption = document.createElement("div");
+        caption.className = "post-caption";
+        caption.textContent = post.caption || "(no caption)";
+        body.appendChild(caption);
+
+        const meta = document.createElement("div");
+        meta.className = "post-meta-row";
+
+        const tsSpan = document.createElement("span");
+        const ts = new Date(post.timestamp);
+        tsSpan.textContent = ts.toLocaleString();
+        meta.appendChild(tsSpan);
+
+        if (post.permalink) {
+          const linkSpan = document.createElement("span");
+          linkSpan.className = "post-link";
+          linkSpan.textContent = "Open on Instagram ↗";
+          meta.appendChild(linkSpan);
+        }
+
+        body.appendChild(meta);
+
+        card.appendChild(media);
+        card.appendChild(body);
+        postsGridEl.appendChild(card);
+      });
+    }
+
+    // ---- EVENT HANDLERS ----
+    btnConnect.addEventListener("click", function () {
+      btnConnect.disabled = true;
+      btnConnectLabel.textContent = "Connecting…";
+      log("Simulating Meta OAuth flow (demo only)…", "warn");
+
+      // DEMO ONLY: simulate delay, then mark as connected and load mock accounts
+      setTimeout(function () {
+        isConnected = true;
+        updateConnectionUI();
+        accounts = MOCK_ACCOUNTS;
+        renderAccounts();
+        selectionHintEl.textContent = "Choose which Instagram account to connect to SMART (mock).";
+        setStepLabel(2);
+        btnConnect.disabled = false;
+        log("Connected (demo). Loaded mock Pages + Instagram accounts.", "ok");
+      }, 800);
+    });
+
+    // ---- INIT ----
+    updateConnectionUI();
+    renderAccounts();
+    renderPosts();
+    setStepLabel(1);
+    log("Ready. For App Review, click Connect, choose an account, then show the preview on the right.", "warn");
+  </script>
+</body>
+</html>
