@@ -78,6 +78,7 @@
     background: var(--card);
     box-shadow: var(--shadow);
     padding: 20px 20px 16px;
+    position: relative; /* for skip button */
   }
 
   .header-row {
@@ -103,6 +104,23 @@
     font-size: 13px;
     color: var(--muted);
     max-width: 480px;
+  }
+
+  /* Skip button top-right */
+  .skip-top-right {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+  }
+
+  .btn-skip-top {
+    font-size: 11px;
+    padding: 4px 10px;
+    opacity: 0.65;
+  }
+
+  .btn-skip-top:hover {
+    opacity: 1;
   }
 
   .chip {
@@ -154,30 +172,6 @@
     background: var(--accent);
     border-radius: inherit;
     transition: width 0.25s ease-out;
-  }
-
-  .step-dots {
-    margin-top: 8px;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .step-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 999px;
-    background: #d1d5db;
-    opacity: 0.6;
-    transform: scale(0.9);
-    transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
-  }
-
-  .step-dot.active {
-    background: var(--accent);
-    opacity: 1;
-    transform: scale(1.2);
-    box-shadow: 0 0 0 4px rgba(113, 213, 76, 0.3);
   }
 
   /* Steps */
@@ -404,6 +398,11 @@
       flex-direction: column;
       gap: 8px;
     }
+
+    .skip-top-right {
+      top: 10px;
+      right: 10px;
+    }
   }
 </style>
 
@@ -420,6 +419,13 @@
 
     <!-- Onboarding card -->
     <div class="frame">
+      <!-- Skip button in top right -->
+      <div class="skip-top-right">
+        <button type="button" class="btn-ghost btn-skip-top" id="btnSkip">
+          Skip for now
+        </button>
+      </div>
+
       <div class="header-row">
         <div class="title-block">
           <h1>Welcome to SMART Creator</h1>
@@ -428,7 +434,6 @@
             your content with the right patients and partners.
           </p>
         </div>
-
       </div>
 
       <!-- Progress -->
@@ -440,7 +445,7 @@
         <div class="progress-bar">
           <div class="progress-bar-fill" id="progressFill"></div>
         </div>
-        <div class="step-dots" id="stepDots"></div>
+        <!-- dots removed -->
       </div>
 
       <!-- Steps -->
@@ -578,7 +583,7 @@
         </div>
         <div class="nav-buttons">
           <button type="button" class="btn-ghost" id="btnBack">Back</button>
-          <button type="button" class="btn-secondary" id="btnSkip">Skip for now</button>
+          <!-- Skip removed from here on purpose -->
           <button type="button" class="btn-primary" id="btnNext">
             Next
           </button>
@@ -594,21 +599,12 @@
     const steps = document.querySelectorAll(".step");
     const progressFill = document.getElementById("progressFill");
     const progressLabel = document.getElementById("progressLabel");
-    const stepDots = document.getElementById("stepDots");
     const btnBack = document.getElementById("btnBack");
     const btnSkip = document.getElementById("btnSkip");
     const btnNext = document.getElementById("btnNext");
     const navHint = document.getElementById("navHint");
 
     const pillGroups = document.querySelectorAll(".pill-group");
-
-    // Build step dots
-    for (let i = 1; i <= TOTAL_STEPS; i++) {
-      const dot = document.createElement("div");
-      dot.className = "step-dot" + (i === 1 ? " active" : "");
-      dot.dataset.step = String(i);
-      stepDots.appendChild(dot);
-    }
 
     function setStep(step) {
       currentStep = step;
@@ -621,11 +617,6 @@
       const pct = ((currentStep - 1) / (TOTAL_STEPS - 1)) * 100;
       progressFill.style.width = pct + "%";
       progressLabel.textContent = `Step ${currentStep} of ${TOTAL_STEPS}`;
-
-      stepDots.querySelectorAll(".step-dot").forEach(dot => {
-        const sStep = Number(dot.dataset.step);
-        dot.classList.toggle("active", sStep === currentStep);
-      });
 
       btnBack.style.visibility = currentStep === 1 ? "hidden" : "visible";
       btnNext.textContent = currentStep === TOTAL_STEPS ? "Finish" : "Next";
