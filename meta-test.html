@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Meta Token Exchange Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        max-width: 600px;
+      }
+      textarea, input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+      }
+      button {
+        padding: 10px 18px;
+        margin-top: 15px;
+      }
+      pre {
+        background: #f5f5f5;
+        padding: 15px;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Meta Instagram Token Exchange - Test Page</h2>
+
+    <label>API Base URL:</label>
+    <input
+      id="apiBase"
+      value="https://api-dev.smartdocapp.com/v1"
+    />
+
+    <label style="margin-top: 20px; display: block;">Short-lived IG Token:</label>
+    <textarea id="shortToken" rows="4" placeholder="Paste short-lived Instagram token here..."></textarea>
+
+    <label style="margin-top: 20px; display: block;">Bearer Token (accessToken from SMART):</label>
+    <textarea id="bearer" rows="2" placeholder="Paste SMART accessToken here"></textarea>
+
+    <button onclick="exchangeToken()">Exchange Token</button>
+
+    <h3>Response:</h3>
+    <pre id="output">No request yet…</pre>
+
+    <script>
+      async function exchangeToken() {
+        const apiBase = document.getElementById("apiBase").value.trim();
+        const shortToken = document.getElementById("shortToken").value.trim();
+        const bearer = document.getElementById("bearer").value.trim();
+        const output = document.getElementById("output");
+
+        if (!shortToken) {
+          output.textContent = "❌ Missing short-lived IG token";
+          return;
+        }
+        if (!bearer) {
+          output.textContent = "❌ Missing SMART bearer token";
+          return;
+        }
+
+        output.textContent = "⏳ Sending request...";
+
+        try {
+          const response = await fetch(
+            apiBase + "/third-party/instagram/token-exchange",
+            {
+              method: "POST",
+              headers: {
+                "Authorization": "Bearer " + bearer,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                access_token: shortToken
+              })
+            }
+          );
+
+          const json = await response.json();
+
+          output.textContent =
+            "Status: " + response.status + "\n\n" +
+            JSON.stringify(json, null, 2);
+        } catch (err) {
+          output.textContent = "Request error:\n" + err;
+        }
+      }
+    </script>
+
+  </body>
+</html>
