@@ -12,7 +12,6 @@
       margin: auto;
       background: #fafafa;
     }
-
     h1 { font-size: 22px; }
     h2 { font-size: 18px; margin-top: 32px; }
     p  { color: #555; }
@@ -25,19 +24,16 @@
       margin-top: 16px;
     }
 
-    button {
+    .btn {
       padding: 10px 16px;
-      margin-top: 10px;
-      cursor: pointer;
       border-radius: 6px;
-      border: 1px solid #333;
-      background: #333;
+      border: none;
+      background: #1877f2;
       color: white;
-    }
-
-    button:disabled {
-      background: #aaa;
-      cursor: not-allowed;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
     }
 
     .account {
@@ -49,7 +45,7 @@
     }
 
     .account.selected {
-      border-color: #007bff;
+      border-color: #1877f2;
       background: #eef5ff;
     }
 
@@ -75,123 +71,99 @@
 
 <h1>SMART · Instagram Integration Demo</h1>
 <p>
-  This demo simulates how SMART connects an Instagram Creator account and displays your latest posts.
-  No real API calls are used — this is mock data for Meta App Review.
+  This demo shows the end-to-end Instagram authorization flow used by SMART.
+  The Meta login and permission grant are real. Instagram content shown below
+  is mock data for demonstration purposes.
 </p>
 
 <!-- STEP 1 -->
-<h2>Step 1 — Connect with Facebook (Simulated)</h2>
+<h2>Step 1 — Connect with Facebook</h2>
 <div class="step-box">
-  <p>In production, this starts the Meta OAuth login. Here we simulate a successful connection.</p>
-  <button id="connectBtn">Connect with Facebook</button>
-  <p id="connectStatus" style="color: green; margin-top: 10px; display:none;">
-    ✔ Connected (Simulated)
+  <p>
+    The user authenticates with Meta and grants permissions required to retrieve
+    Instagram Business / Creator content.
+  </p>
+
+  <a
+    class="btn"
+    href="https://www.facebook.com/v18.0/dialog/oauth
+      ?client_id=1411304363694964
+      &redirect_uri=YOUR_REDIRECT_URL
+      &scope=pages_show_list,pages_read_engagement,instagram_basic
+      &response_type=code"
+  >
+    Connect with Facebook
+  </a>
+
+  <p id="connectStatus" style="display:none;color:green;margin-top:10px;">
+    ✔ Connected via Meta OAuth
   </p>
 </div>
 
 <!-- STEP 2 -->
-<h2>Step 2 — Select your Instagram Business / Creator Account</h2>
+<h2>Step 2 — Select Instagram Account</h2>
 <div class="step-box">
-  <p>After login, SMART retrieves your Facebook Pages with linked Instagram Professional accounts.</p>
-
-  <div id="accountsContainer" style="margin-top: 12px;">
-    <p style="color:#999;">Connect first to load accounts.</p>
-  </div>
+  <p>
+    After authentication, SMART retrieves Facebook Pages linked to Instagram
+    Professional accounts.
+  </p>
+  <div id="accountsContainer"></div>
 </div>
 
 <!-- STEP 3 -->
-<h2>Step 3 — Preview Posts (Mocked Instagram Graph API Response)</h2>
+<h2>Step 3 — Preview Instagram Posts</h2>
 <div class="step-box">
   <p>
-    SMART will show your recent media from the Instagram Graph API.
-    Below is an example using mock data.
+    SMART displays recent public posts retrieved via the Instagram Graph API.
+    Content below is mocked for review purposes.
   </p>
-
-  <div id="postsContainer">
-    <p style="color:#999;">Select an account to preview posts.</p>
-  </div>
+  <div id="postsContainer"></div>
 </div>
 
 <script>
-  // ---- MOCK INSTAGRAM ACCOUNTS ----
-  const MOCK_ACCOUNTS = [
-    {
-      id: "17800000000001",
-      username: "wellness_with_jane",
-      page: "Jane's Wellness Coaching",
-      picture: "meal1.jpg"
-    },
-    {
-      id: "17800000000002",
-      username: "nutrition_daily_demo",
-      page: "Daily Nutrition Tips",
-      picture: "meal2.jpeg"
-    }
-  ];
+  // Detect OAuth redirect
+  const params = new URLSearchParams(window.location.search);
+  const hasAuth = params.has("code");
 
-  // ---- MOCK POSTS ----
-  const MOCK_POSTS = [
-    {
-      media_url: "meal1.jpg",
-      caption: "Healthy bowl — high protein, greens, and whole grains 🥗",
-      timestamp: "2025-01-02T12:00:00Z",
-      permalink: "https://instagram.com/p/demo1"
-    },
-    {
-      media_url: "meal2.jpeg",
-      caption: "Fuel your day with balanced nutrition 🔥",
-      timestamp: "2025-01-05T09:20:00Z",
-      permalink: "https://instagram.com/p/demo2"
-    }
-  ];
-
-  let connected = false;
-  let selectedAccount = null;
-
-  const connectBtn = document.getElementById("connectBtn");
-  const connectStatus = document.getElementById("connectStatus");
   const accountsContainer = document.getElementById("accountsContainer");
   const postsContainer = document.getElementById("postsContainer");
+  const connectStatus = document.getElementById("connectStatus");
 
-  connectBtn.onclick = () => {
-    connected = true;
+  if (hasAuth) {
     connectStatus.style.display = "block";
     loadAccounts();
-  };
+  }
+
+  const MOCK_ACCOUNTS = [
+    { id: "1", username: "nutrition_demo", page: "Nutrition Demo Page" },
+    { id: "2", username: "health_creator", page: "Health Creator Page" }
+  ];
+
+  const MOCK_POSTS = [
+    {
+      media_url: "https://via.placeholder.com/600x400",
+      caption: "Balanced nutrition supports long-term health.",
+      timestamp: "2025-01-10T10:00:00Z",
+      permalink: "https://instagram.com/p/demo"
+    }
+  ];
 
   function loadAccounts() {
     accountsContainer.innerHTML = "";
-
     MOCK_ACCOUNTS.forEach((acct) => {
       const div = document.createElement("div");
       div.className = "account";
-      div.textContent = `@${acct.username}  — Page: ${acct.page}`;
-      div.onclick = () => {
-        selectedAccount = acct;
-        highlightSelection();
-        loadPosts();
-      };
+      div.textContent = `@${acct.username} — ${acct.page}`;
+      div.onclick = () => loadPosts();
       accountsContainer.appendChild(div);
     });
   }
 
-  function highlightSelection() {
-    Array.from(accountsContainer.children).forEach((el) => {
-      el.classList.remove("selected");
-    });
-    const idx = MOCK_ACCOUNTS.findIndex(
-      (a) => a.username === selectedAccount.username
-    );
-    accountsContainer.children[idx].classList.add("selected");
-  }
-
   function loadPosts() {
     postsContainer.innerHTML = "";
-
     MOCK_POSTS.forEach((post) => {
       const div = document.createElement("div");
       div.className = "post";
-
       div.innerHTML = `
         <div class="post-img" style="background-image:url('${post.media_url}')"></div>
         <p><strong>Caption:</strong> ${post.caption}</p>
