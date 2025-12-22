@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>SMART · Instagram Integration Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,10 +12,12 @@
       max-width: 720px;
       margin: auto;
       background: #fafafa;
+      color: #222;
     }
+
     h1 { font-size: 22px; }
     h2 { font-size: 18px; margin-top: 32px; }
-    p  { color: #555; }
+    p  { color: #555; line-height: 1.5; }
 
     .step-box {
       border: 1px solid #ddd;
@@ -34,6 +37,7 @@
       cursor: pointer;
       text-decoration: none;
       display: inline-block;
+      margin-top: 8px;
     }
 
     .account {
@@ -63,6 +67,19 @@
       background-size: cover;
       background-position: center;
       border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .success {
+      color: green;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    footer {
+      margin-top: 48px;
+      font-size: 12px;
+      color: #666;
     }
   </style>
 </head>
@@ -70,32 +87,38 @@
 <body>
 
 <h1>SMART · Instagram Integration Demo</h1>
+
 <p>
-  This demo shows the end-to-end Instagram authorization flow used by SMART.
-  The Meta login and permission grant are real. Instagram content shown below
-  is mock data for demonstration purposes.
+  This page demonstrates the end-to-end Instagram authorization flow used by
+  SMART. The Meta login and permission grant are real. Instagram content shown
+  below is mock data for Meta App Review demonstration purposes.
 </p>
 
 <!-- STEP 1 -->
 <h2>Step 1 — Connect with Facebook</h2>
 <div class="step-box">
   <p>
-    The user authenticates with Meta and grants permissions required to retrieve
-    Instagram Business / Creator content.
+    The user authenticates with Meta and grants SMART read-only access to their
+    Facebook Pages and linked Instagram Business or Creator accounts.
   </p>
 
   <a
     class="btn"
     href="https://www.facebook.com/v18.0/dialog/oauth
-      ?client_id=1411304363694964
-      &redirect_uri=YOUR_REDIRECT_URL
-      &scope=pages_show_list,pages_read_engagement,instagram_basic
-      &response_type=code"
+    ?client_id=1411304363694964
+    &redirect_uri=https%3A%2F%2Fonboarding-creator-test.vercel.app%2Fcallback.html
+    &scope=pages_show_list,pages_read_engagement,instagram_basic
+    &response_type=code"
   >
     Connect with Facebook
   </a>
 
-  <p id="connectStatus" style="display:none;color:green;margin-top:10px;">
+  <p style="font-size:12px;color:#666;margin-top:8px;">
+    You will be asked to grant read-only permissions. SMART cannot post, read
+    messages, or access private content.
+  </p>
+
+  <p id="connectStatus" class="success" style="display:none;">
     ✔ Connected via Meta OAuth
   </p>
 </div>
@@ -105,20 +128,35 @@
 <div class="step-box">
   <p>
     After authentication, SMART retrieves Facebook Pages linked to Instagram
-    Professional accounts.
+    professional accounts. The list below is mocked for review.
   </p>
-  <div id="accountsContainer"></div>
+  <div id="accountsContainer">
+    <p style="color:#999;">Connect first to load accounts.</p>
+  </div>
 </div>
 
 <!-- STEP 3 -->
 <h2>Step 3 — Preview Instagram Posts</h2>
 <div class="step-box">
   <p>
-    SMART displays recent public posts retrieved via the Instagram Graph API.
-    Content below is mocked for review purposes.
+    SMART displays recent public Instagram posts retrieved via the Instagram
+    Graph API. Content below is mocked for demonstration purposes.
   </p>
-  <div id="postsContainer"></div>
+  <div id="postsContainer">
+    <p style="color:#999;">Select an account to preview posts.</p>
+  </div>
 </div>
+
+<footer>
+  <hr />
+  <p>
+    Privacy Policy:
+    <a href="https://www.iubenda.com/privacy-policy/97067679" target="_blank">
+      https://www.iubenda.com/privacy-policy/97067679
+    </a>
+  </p>
+  <p>Contact: info@smartdocapp.com</p>
+</footer>
 
 <script>
   // Detect OAuth redirect
@@ -134,6 +172,7 @@
     loadAccounts();
   }
 
+  // ---- MOCK DATA ----
   const MOCK_ACCOUNTS = [
     { id: "1", username: "nutrition_demo", page: "Nutrition Demo Page" },
     { id: "2", username: "health_creator", page: "Health Creator Page" }
@@ -150,17 +189,24 @@
 
   function loadAccounts() {
     accountsContainer.innerHTML = "";
+
     MOCK_ACCOUNTS.forEach((acct) => {
       const div = document.createElement("div");
       div.className = "account";
       div.textContent = `@${acct.username} — ${acct.page}`;
-      div.onclick = () => loadPosts();
+      div.onclick = () => loadPosts(div);
       accountsContainer.appendChild(div);
     });
   }
 
-  function loadPosts() {
+  function loadPosts(selectedEl) {
+    Array.from(accountsContainer.children).forEach(el =>
+      el.classList.remove("selected")
+    );
+    selectedEl.classList.add("selected");
+
     postsContainer.innerHTML = "";
+
     MOCK_POSTS.forEach((post) => {
       const div = document.createElement("div");
       div.className = "post";
