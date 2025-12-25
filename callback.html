@@ -10,25 +10,14 @@
       font-family: Arial, sans-serif;
       background: #fafafa;
       padding: 32px;
-      max-width: 720px;
+      max-width: 760px;
       margin: auto;
       color: #333;
     }
 
-    h1 {
-      font-size: 22px;
-      margin-bottom: 8px;
-    }
-
-    h2 {
-      font-size: 18px;
-      margin-top: 28px;
-    }
-
-    p {
-      color: #555;
-      line-height: 1.5;
-    }
+    h1 { font-size: 22px; margin-bottom: 8px; }
+    h2 { font-size: 18px; margin-top: 28px; }
+    p  { color: #555; line-height: 1.5; }
 
     .success {
       background: #e7f9dd;
@@ -51,38 +40,12 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       margin-top: 10px;
-      cursor: pointer;
-    }
-
-    .account.selected {
-      border-color: #71d54c;
-      background: #f3ffe9;
-    }
-
-    .post {
-      border: 1px solid #ccc;
-      margin-top: 12px;
-      padding: 10px;
-      border-radius: 6px;
-      background: white;
-    }
-
-    .post-img {
-      width: 100%;
-      height: 220px;
-      background: #ddd;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #777;
-      border-radius: 6px;
-      margin-bottom: 8px;
     }
 
     .note {
       font-size: 13px;
       color: #777;
-      margin-top: 12px;
+      margin-top: 8px;
     }
   </style>
 </head>
@@ -92,119 +55,85 @@
 <h1>SMART · Instagram Authorization Complete</h1>
 
 <p>
-  You have successfully completed Meta login and granted SMART permission
-  to access your public Instagram content.
+  The user has successfully completed Meta login and approved SMART’s
+  requested permissions.
 </p>
 
-<div class="success" id="successBox">
-  ✔ Authorization successful
+<div class="success">
+  ✔ Authorization successful — Meta OAuth flow completed
 </div>
 
 <p class="note">
-  For Meta App Review: this page demonstrates the post-login experience.
-  Backend token exchange and media fetching are mocked for demonstration.
+  This page represents the post-login experience after Meta redirects
+  the user back to SMART.
 </p>
 
 <!-- STEP 1 -->
 <h2>Step 1 — OAuth Result</h2>
-<div class="box">
-  <p id="codeStatus">Checking authorization status…</p>
-</div>
+<div class="box" id="codeStatus">Checking authorization status…</div>
+
+<p class="note">
+  SMART receives an authorization <strong>code</strong> from Meta, which is
+  exchanged server-to-server for an access token.
+</p>
 
 <!-- STEP 2 -->
-<h2>Step 2 — Connected Instagram Accounts (Mock)</h2>
+<h2>Step 2 — Approved Permissions</h2>
+<div class="box">
+  <p>The user approved the following read-only permissions:</p>
+  <ul style="font-size:14px;color:#555;">
+    <li><strong>pages_show_list</strong> — list Facebook Pages the user manages</li>
+    <li><strong>pages_read_engagement</strong> — verify Page ↔ Instagram connection</li>
+    <li><strong>instagram_basic</strong> — read public Instagram posts</li>
+  </ul>
+
+  <p class="note">
+    SMART cannot post content, read messages, manage ads, or access private data.
+  </p>
+</div>
+
+<!-- STEP 3 -->
+<h2>Step 3 — Connected Instagram Accounts</h2>
 <div class="box" id="accountsContainer">
   <p class="note">Loading connected accounts…</p>
 </div>
 
-<!-- STEP 3 -->
-<h2>Step 3 — Preview Instagram Posts (Mock)</h2>
-<div class="box" id="postsContainer">
-  <p class="note">Select an account to preview posts.</p>
-</div>
+<p class="note">
+  Accounts shown below are retrieved using <strong>pages_show_list</strong>
+  and are mocked for Meta App Review.
+</p>
 
 <script>
-  // --- Read OAuth code ---
+  // Read OAuth redirect parameters
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
 
   const codeStatus = document.getElementById("codeStatus");
   const accountsContainer = document.getElementById("accountsContainer");
-  const postsContainer = document.getElementById("postsContainer");
 
   if (code) {
     codeStatus.innerHTML =
       "<strong>OAuth code received.</strong><br />" +
-      "This confirms the user approved Meta permissions.";
+      "This confirms the user explicitly approved Meta permissions.";
   } else {
     codeStatus.innerHTML =
       "<strong>No OAuth code found.</strong><br />" +
       "This page is intended to be reached after Meta login.";
   }
 
-  // --- Mock accounts ---
+  // ---- MOCK ACCOUNTS FOR APP REVIEW ----
   const MOCK_ACCOUNTS = [
-    {
-      id: "178000000001",
-      username: "smart_health_demo",
-      page: "SMART Health Demo"
-    },
-    {
-      id: "178000000002",
-      username: "nutrition_creator_test",
-      page: "Nutrition Creator Test"
-    }
+    { username: "smart_health_demo", page: "SMART Health Demo Page" },
+    { username: "nutrition_creator_test", page: "Nutrition Creator Test Page" }
   ];
 
-  // --- Mock posts ---
-  const MOCK_POSTS = [
-    {
-      caption: "Balanced nutrition supports long-term health.",
-      timestamp: "2025-01-05T12:00:00Z",
-      link: "https://instagram.com/p/demo1"
-    },
-    {
-      caption: "Sleep consistency matters more than duration.",
-      timestamp: "2025-01-10T09:30:00Z",
-      link: "https://instagram.com/p/demo2"
-    }
-  ];
-
-  function renderAccounts() {
-    accountsContainer.innerHTML = "";
-    MOCK_ACCOUNTS.forEach((acct, idx) => {
-      const div = document.createElement("div");
-      div.className = "account";
-      div.textContent = `@${acct.username} — Page: ${acct.page}`;
-      div.onclick = () => selectAccount(idx);
-      accountsContainer.appendChild(div);
-    });
-  }
-
-  function selectAccount(index) {
-    Array.from(accountsContainer.children).forEach(el =>
-      el.classList.remove("selected")
-    );
-    accountsContainer.children[index].classList.add("selected");
-    renderPosts();
-  }
-
-  function renderPosts() {
-    postsContainer.innerHTML = "";
-    MOCK_POSTS.forEach(post => {
-      const div = document.createElement("div");
-      div.className = "post";
-      div.innerHTML = `
-        <div class="post-img">Image / Video Preview</div>
-        <p><strong>Caption:</strong> ${post.caption}</p>
-        <p><strong>Date:</strong> ${new Date(post.timestamp).toLocaleString()}</p>
-        <p><a href="${post.link}" target="_blank">Open on Instagram ↗</a></p>
-      `;
-      postsContainer.appendChild(div);
-    });
-  }
-
-  renderAccounts();
+  accountsContainer.innerHTML = "";
+  MOCK_ACCOUNTS.forEach(acct => {
+    const div = document.createElement("div");
+    div.className = "account";
+    div.textContent = `@${acct.username} — ${acct.page}`;
+    accountsContainer.appendChild(div);
+  });
 </script>
 
 </body>

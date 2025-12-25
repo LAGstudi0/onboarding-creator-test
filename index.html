@@ -9,13 +9,13 @@
     body {
       font-family: Arial, sans-serif;
       padding: 24px;
-      max-width: 720px;
+      max-width: 760px;
       margin: auto;
       background: #fafafa;
       color: #222;
     }
 
-    h1 { font-size: 22px; }
+    h1 { font-size: 22px; margin-bottom: 8px; }
     h2 { font-size: 18px; margin-top: 32px; }
     p  { color: #555; line-height: 1.5; }
 
@@ -24,7 +24,7 @@
       border-radius: 8px;
       padding: 16px;
       background: white;
-      margin-top: 16px;
+      margin-top: 12px;
     }
 
     .btn {
@@ -37,7 +37,13 @@
       cursor: pointer;
       text-decoration: none;
       display: inline-block;
-      margin-top: 8px;
+      margin-top: 10px;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #777;
+      margin-top: 6px;
     }
 
     .account {
@@ -63,17 +69,11 @@
 
     .post-img {
       width: 100%;
-      height: 260px;
+      height: 240px;
       background-size: cover;
       background-position: center;
       border-radius: 6px;
       margin-bottom: 8px;
-    }
-
-    .success {
-      color: green;
-      font-weight: bold;
-      margin-top: 10px;
     }
 
     footer {
@@ -89,17 +89,28 @@
 <h1>SMART · Instagram Integration Demo</h1>
 
 <p>
-  This page demonstrates the end-to-end Instagram authorization flow used by
-  SMART. The Meta login and permission grant are real. Instagram content shown
-  below is mock data for Meta App Review demonstration purposes.
+  This page demonstrates the <strong>end-to-end Instagram authorization flow</strong>
+  used by SMART. Meta login and permission approval are real.
+  Instagram content shown below is <strong>mocked solely for Meta App Review</strong>.
 </p>
 
 <!-- STEP 1 -->
-<h2>Step 1 — Connect with Facebook</h2>
+<h2>Step 1 — Connect with Facebook (Meta OAuth)</h2>
 <div class="step-box">
   <p>
-    The user authenticates with Meta and grants SMART read-only access to their
-    Facebook Pages and linked Instagram Business or Creator accounts.
+    The user authenticates with Meta and explicitly grants SMART
+    <strong>read-only</strong> permissions.
+  </p>
+
+  <p class="note">
+    Permissions requested:
+    <br />• <strong>pages_show_list</strong> — list Pages the user manages
+    <br />• <strong>pages_read_engagement</strong> — confirm Page ↔ Instagram connection
+    <br />• <strong>instagram_basic</strong> — read public Instagram posts
+  </p>
+
+  <p class="note">
+    SMART cannot post content, read messages, manage ads, or access private data.
   </p>
 
   <a
@@ -108,26 +119,24 @@
   >
     Connect with Facebook
   </a>
-
-  <p style="font-size:12px;color:#666;margin-top:8px;">
-    You will be asked to grant read-only permissions. SMART cannot post, read
-    messages, or access private content.
-  </p>
-
-  <p id="connectStatus" class="success" style="display:none;">
-    ✔ Connected via Meta OAuth
-  </p>
 </div>
 
 <!-- STEP 2 -->
 <h2>Step 2 — Select Instagram Account</h2>
 <div class="step-box">
   <p>
-    After authentication, SMART retrieves Facebook Pages linked to Instagram
-    professional accounts. The list below is mocked for review.
+    After permission approval, SMART retrieves the user's Facebook Pages
+    and linked Instagram Business / Creator accounts using
+    <strong>pages_show_list</strong>.
   </p>
+
+  <p class="note">
+    Accounts shown below are retrieved using <strong>pages_show_list</strong>
+    (mocked for App Review).
+  </p>
+
   <div id="accountsContainer">
-    <p style="color:#999;">Connect first to load accounts.</p>
+    <p class="note">Connect first to load accounts.</p>
   </div>
 </div>
 
@@ -135,11 +144,16 @@
 <h2>Step 3 — Preview Instagram Posts</h2>
 <div class="step-box">
   <p>
-    SMART displays recent public Instagram posts retrieved via the Instagram
-    Graph API. Content below is mocked for demonstration purposes.
+    SMART retrieves recent public Instagram posts using
+    <strong>instagram_basic</strong>.
   </p>
+
+  <p class="note">
+    Posts below are mocked for App Review and represent public content only.
+  </p>
+
   <div id="postsContainer">
-    <p style="color:#999;">Select an account to preview posts.</p>
+    <p class="note">Select an account to preview posts.</p>
   </div>
 </div>
 
@@ -152,26 +166,24 @@
     </a>
   </p>
   <p>Contact: info@smartdocapp.com</p>
+  <p class="note">Users can revoke access at any time via Meta settings.</p>
 </footer>
 
 <script>
-  // Detect OAuth redirect
   const params = new URLSearchParams(window.location.search);
   const hasAuth = params.has("code");
 
   const accountsContainer = document.getElementById("accountsContainer");
   const postsContainer = document.getElementById("postsContainer");
-  const connectStatus = document.getElementById("connectStatus");
 
   if (hasAuth) {
-    connectStatus.style.display = "block";
     loadAccounts();
   }
 
-  // ---- MOCK DATA ----
+  // ---- MOCK DATA FOR APP REVIEW ----
   const MOCK_ACCOUNTS = [
-    { id: "1", username: "nutrition_demo", page: "Nutrition Demo Page" },
-    { id: "2", username: "health_creator", page: "Health Creator Page" }
+    { username: "nutrition_demo", page: "Nutrition Demo Page" },
+    { username: "health_creator", page: "Health Creator Page" }
   ];
 
   const MOCK_POSTS = [
@@ -185,8 +197,7 @@
 
   function loadAccounts() {
     accountsContainer.innerHTML = "";
-
-    MOCK_ACCOUNTS.forEach((acct) => {
+    MOCK_ACCOUNTS.forEach(acct => {
       const div = document.createElement("div");
       div.className = "account";
       div.textContent = `@${acct.username} — ${acct.page}`;
@@ -202,8 +213,7 @@
     selectedEl.classList.add("selected");
 
     postsContainer.innerHTML = "";
-
-    MOCK_POSTS.forEach((post) => {
+    MOCK_POSTS.forEach(post => {
       const div = document.createElement("div");
       div.className = "post";
       div.innerHTML = `
