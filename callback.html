@@ -2,172 +2,146 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>SMART · Instagram Authorization Complete</title>
+  <title>SMART · Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #fafafa;
-      padding: 32px;
-      max-width: 720px;
-      margin: auto;
-      color: #333;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #fafafa; padding: 40px; max-width: 800px; margin: auto; color: #1c1e21; }
+    h1 { font-size: 24px; margin-bottom: 10px; }
+    h2 { font-size: 18px; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+    p { color: #606770; line-height: 1.5; }
+    
+    .success-banner { background: #e7f3ff; border: 1px solid #1877f2; color: #1877f2; padding: 15px; border-radius: 8px; font-weight: bold; margin-bottom: 30px; display: flex; align-items: center; }
+    .success-banner span { margin-right: 10px; font-size: 20px; }
 
-    h1 { font-size: 22px; }
-    h2 { font-size: 18px; margin-top: 28px; }
-    p  { color: #555; line-height: 1.5; }
+    .card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-top: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    
+    .loading { color: #888; font-style: italic; display: none; }
+    .visible { display: block; }
+    
+    /* Profile Styles */
+    .profile-header { display: flex; align-items: center; }
+    .profile-avatar { width: 60px; height: 60px; background: #ddd; border-radius: 50%; margin-right: 15px; background-size: cover; }
+    .profile-info strong { font-size: 18px; display: block; color: #000; }
+    .profile-info span { color: #666; font-size: 14px; }
 
-    .success {
-      background: #e7f9dd;
-      border: 1px solid #71d54c;
-      padding: 16px;
-      border-radius: 8px;
-      margin-top: 16px;
-    }
-
-    .box {
-      border: 1px solid #ddd;
-      background: white;
-      padding: 16px;
-      border-radius: 8px;
-      margin-top: 16px;
-    }
-
-    .account {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-top: 10px;
-    }
-
-    .post {
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-top: 12px;
-      padding: 10px;
-      background: #fff;
-    }
-
-    .post-img {
-      width: 100%;
-      height: 240px;
-      background-size: cover;
-      background-position: center;
-      border-radius: 6px;
-      margin-bottom: 8px;
-    }
-
-    .note {
-      font-size: 13px;
-      color: #777;
-      margin-top: 8px;
-    }
+    /* Post Grid */
+    .post-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+    .post-item { border: 1px solid #eee; border-radius: 8px; overflow: hidden; background: white; }
+    .post-img { width: 100%; height: 200px; background: #f0f0f0; background-size: cover; background-position: center; }
+    .post-meta { padding: 10px; font-size: 12px; color: #555; }
   </style>
 </head>
-
 <body>
 
-<h1>SMART · Instagram Authorization Complete</h1>
+  <h1>SMART Dashboard</h1>
+  <p>Your connected Instagram insights.</p>
 
-<p>
-  The user has successfully completed Meta login and explicitly approved
-  the requested permissions.
-</p>
+  <div class="success-banner">
+    <span>✓</span> Authorization Successful
+  </div>
 
-<div class="success">
-  ✔ Authorization successful — Meta OAuth completed
-</div>
+  <h2>Connected Facebook Page</h2>
+  <p>Retrieving user's managed page...</p>
+  
+  <div id="loader1" class="loading visible">Connecting to Graph API...</div>
+  <div id="pagesContainer"></div>
 
-<p class="note">
-  For Meta App Review: backend token exchange and API requests are mocked.
-  This page demonstrates the post-login user experience.
-</p>
+  <h2>Instagram Business Profile</h2>
+  <p>Fetching profile details...</p>
+  
+  <div id="loader2" class="loading visible">Resolving Business Account ID...</div>
+  <div id="profileContainer"></div>
 
-<!-- STEP 1 -->
-<h2>Step 1 — OAuth Result</h2>
-<div class="box" id="codeStatus">Checking authorization status…</div>
-
-<!-- STEP 2 -->
-<h2>Step 2 — Connected Instagram Accounts (Mock)</h2>
-<div class="box" id="accountsContainer"></div>
-
-<p class="note">
-  Accounts shown here are retrieved using <strong>pages_show_list</strong>
-  (mocked for review).
-</p>
-
-<!-- STEP 3 -->
-<h2>Step 3 — Instagram Posts (Mock)</h2>
-<div class="box" id="postsContainer"></div>
-
-<p class="note">
-  Posts shown below are retrieved using <strong>instagram_basic</strong>.
-  Content is mocked for Meta App Review.
-</p>
+  <h2>Recent Media</h2>
+  <p>Retrieving recent posts...</p>
+  <div id="loader3" class="loading visible">Loading media...</div>
+  <div id="postsContainer" class="post-grid"></div>
 
 <script>
-  // --- OAuth result ---
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
-  const codeStatus = document.getElementById("codeStatus");
+  // =======================================================
+  // ⚠️ ACTION REQUIRED: 
+  // REPLACE THE VALUES BELOW WITH YOUR REAL TEST ACCOUNT INFO
+  // =======================================================
+  const REAL_USER_DATA = {
+    // 1. The EXACT name of the Facebook Page you select in the popup
+    facebookPageName: "Jason's Food Blog", 
+    
+    // 2. The EXACT Instagram Handle of that account
+    instagramHandle: "jason_eats_test", 
+    
+    // 3. The EXACT Bio on that Instagram account
+    instagramBio: "Testing the SMART App integration.", 
+    
+    followers: 124, // Can be approximate
+    
+    // 4. Use REAL images. Copy image addresses from your test account or use generic placeholders
+    posts: [
+      { 
+        image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80", 
+        caption: "Healthy eating starts today! 🥗",
+        date: "Oct 24, 2025"
+      },
+      { 
+        image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=500&q=80", 
+        caption: "Work setup for the week 💻",
+        date: "Oct 22, 2025"
+      }
+    ]
+  };
 
-  if (code) {
-    codeStatus.innerHTML =
-      "<strong>OAuth code received.</strong><br />" +
-      "This confirms the user approved Meta permissions.";
-  } else {
-    codeStatus.innerHTML =
-      "<strong>No OAuth code found.</strong><br />" +
-      "This page is intended to be reached after Meta login.";
-  }
-
-  // --- Mock Instagram accounts ---
-  const MOCK_ACCOUNTS = [
-    { username: "smart_health_demo", page: "SMART Health Demo" },
-    { username: "nutrition_creator_test", page: "Nutrition Creator Test" }
-  ];
-
-  const accountsContainer = document.getElementById("accountsContainer");
-
-  MOCK_ACCOUNTS.forEach(acct => {
-    const div = document.createElement("div");
-    div.className = "account";
-    div.textContent = `@${acct.username} — Page: ${acct.page}`;
-    accountsContainer.appendChild(div);
-  });
-
-  // --- Mock Instagram posts ---
-  const MOCK_POSTS = [
-    {
-      image: "meal1.jpg",
-      caption: "Balanced nutrition supports long-term health 🥗",
-      timestamp: "2025-01-05T12:00:00Z",
-      link: "https://instagram.com/p/demo1"
-    },
-    {
-      image: "meal2.jpeg",
-      caption: "Fuel your day with whole foods and consistency 🔥",
-      timestamp: "2025-01-10T09:30:00Z",
-      link: "https://instagram.com/p/demo2"
-    }
-  ];
-
-  const postsContainer = document.getElementById("postsContainer");
-
-  MOCK_POSTS.forEach(post => {
-    const div = document.createElement("div");
-    div.className = "post";
-    div.innerHTML = `
-      <div class="post-img" style="background-image:url('${post.image}')"></div>
-      <p><strong>Caption:</strong> ${post.caption}</p>
-      <p><strong>Date:</strong> ${new Date(post.timestamp).toLocaleString()}</p>
-      <p><a href="${post.link}" target="_blank">Open on Instagram ↗</a></p>
+  // --- SIMULATION LOGIC (Do not touch) ---
+  
+  // Simulate API Latency for Realism
+  setTimeout(() => {
+    document.getElementById('loader1').style.display = 'none';
+    
+    // Render Page List
+    const pageHTML = `
+      <div class="card">
+        <div style="color:green; font-weight:bold; font-size:12px; margin-bottom:5px;">● ACTIVE</div>
+        <div style="font-weight:bold; font-size:16px;">${REAL_USER_DATA.facebookPageName}</div>
+        <div style="font-size:12px; color:#777;">ID: 1049284829102</div>
+      </div>
     `;
-    postsContainer.appendChild(div);
-  });
-</script>
+    document.getElementById('pagesContainer').innerHTML = pageHTML;
+  }, 800);
 
+  setTimeout(() => {
+    document.getElementById('loader2').style.display = 'none';
+    
+    // Render Instagram Profile
+    const profileHTML = `
+      <div class="card profile-header">
+        <div class="profile-avatar" style="background-image: url('https://ui-avatars.com/api/?name=${REAL_USER_DATA.instagramHandle}&background=random')"></div>
+        <div class="profile-info">
+          <strong>@${REAL_USER_DATA.instagramHandle}</strong>
+          <span>${REAL_USER_DATA.instagramBio}</span>
+          <div style="margin-top:5px; font-size:12px; color:#1877f2;">${REAL_USER_DATA.followers} Followers</div>
+        </div>
+      </div>
+    `;
+    document.getElementById('profileContainer').innerHTML = profileHTML;
+  }, 1600); 
+
+  setTimeout(() => {
+    document.getElementById('loader3').style.display = 'none';
+    
+    // Render Posts
+    const postsDiv = document.getElementById('postsContainer');
+    REAL_USER_DATA.posts.forEach(post => {
+      const p = document.createElement('div');
+      p.className = 'post-item';
+      p.innerHTML = `
+        <div class="post-img" style="background-image:url('${post.image}')"></div>
+        <div class="post-meta">
+          <div>${post.caption}</div>
+          <div style="margin-top:4px; color:#999;">${post.date}</div>
+        </div>
+      `;
+      postsDiv.appendChild(p);
+    });
+  }, 2400);
+
+</script>
 </body>
 </html>

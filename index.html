@@ -2,230 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>SMART · Instagram Integration Demo</title>
+  <title>SMART · Connect Instagram</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 24px;
-      max-width: 760px;
-      margin: auto;
-      background: #fafafa;
-      color: #222;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 0;
+      margin: 0;
+      background: #f0f2f5;
+      color: #1c1e21;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
     }
 
-    h1 { font-size: 22px; margin-bottom: 8px; }
-    h2 { font-size: 18px; margin-top: 32px; }
-    p  { color: #555; line-height: 1.5; }
-
-    .step-box {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 16px;
+    .container {
       background: white;
-      margin-top: 12px;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 480px;
+      text-align: center;
     }
+
+    h1 { font-size: 24px; margin-bottom: 12px; color: #1877f2; }
+    p  { color: #606770; line-height: 1.5; margin-bottom: 32px; font-size: 16px; }
 
     .btn {
-      padding: 10px 16px;
+      display: inline-block;
+      width: 100%;
+      padding: 14px 0;
       border-radius: 6px;
-      border: none;
       background: #1877f2;
       color: white;
       font-weight: bold;
-      cursor: pointer;
+      font-size: 16px;
       text-decoration: none;
-      display: inline-block;
-      margin-top: 10px;
+      transition: background 0.2s;
+      box-sizing: border-box;
     }
 
-    .note {
-      font-size: 12px;
-      color: #777;
-      margin-top: 6px;
-    }
+    .btn:hover { background: #166fe5; }
 
-    .account {
-      padding: 10px;
-      border: 1px solid #ccc;
+    .permissions-box {
+      background: #f7f8fa;
+      border: 1px solid #ddd;
       border-radius: 6px;
-      margin-top: 10px;
-      cursor: pointer;
+      padding: 16px;
+      text-align: left;
+      margin-bottom: 24px;
     }
+    
+    .permissions-box h3 { font-size: 14px; margin: 0 0 8px; color: #444; text-transform: uppercase; letter-spacing: 0.5px; }
+    .permissions-box ul { margin: 0; padding-left: 20px; color: #555; font-size: 13px; }
+    .permissions-box li { margin-bottom: 4px; }
 
-    .account.selected {
-      border-color: #1877f2;
-      background: #eef5ff;
-    }
-
-    .post {
-      border: 1px solid #ccc;
-      margin-top: 12px;
-      padding: 10px;
-      border-radius: 6px;
-      background: white;
-    }
-
-    .post-img {
-      width: 100%;
-      height: 240px;
-      background-size: cover;
-      background-position: center;
-      border-radius: 6px;
-      margin-bottom: 8px;
-    }
-
-    footer {
-      margin-top: 48px;
-      font-size: 12px;
-      color: #666;
-    }
+    footer { margin-top: 24px; font-size: 12px; color: #888; }
+    footer a { color: #888; text-decoration: none; }
   </style>
 </head>
 
 <body>
 
-<h1>SMART · Instagram Integration Demo</h1>
-
-<p>
-  This page demonstrates the <strong>end-to-end Instagram authorization flow</strong>
-  used by SMART. Meta login and permission approval are real.
-  Instagram content shown below is <strong>mocked solely for Meta App Review</strong>.
-</p>
-
-<!-- STEP 1 -->
-<h2>Step 1 — Connect with Facebook (Meta OAuth)</h2>
-<div class="step-box">
+<div class="container">
+  <h1>Connect to SMART</h1>
   <p>
-    The user authenticates with Meta and explicitly grants SMART
-    <strong>read-only</strong> permissions.
+    Link your Instagram Business account to access your dashboard, analyze your posts, and view your profile statistics.
   </p>
 
-  <p class="note">
-    Permissions requested:
-    <br />• <strong>pages_show_list</strong> — list Pages the user manages
-    <br />• <strong>pages_read_engagement</strong> — confirm Page ↔ Instagram connection
-    <br />• <strong>instagram_basic</strong> — read public Instagram posts
-  </p>
-
-  <p class="note">
-    SMART cannot post content, read messages, manage ads, or access private data.
-  </p>
+  <div class="permissions-box">
+    <h3>Permissions Required</h3>
+    <ul>
+      <li><strong>pages_show_list:</strong> To identify your Facebook Page.</li>
+      <li><strong>pages_read_engagement:</strong> To verify your Instagram connection.</li>
+      <li><strong>instagram_basic:</strong> To display your profile and posts.</li>
+    </ul>
+  </div>
 
   <a
     class="btn"
     href="https://www.facebook.com/v18.0/dialog/oauth?client_id=1411304363694964&redirect_uri=https%3A%2F%2Fonboarding-creator-test.vercel.app%2Fcallback.html&scope=pages_show_list,pages_read_engagement,instagram_basic&response_type=code"
   >
-    Connect with Facebook
+    Continue with Facebook
   </a>
+
+  <footer>
+    SMART Integration Demo &bull; <a href="https://www.iubenda.com/privacy-policy/97067679" target="_blank">Privacy Policy</a>
+  </footer>
 </div>
-
-<!-- STEP 2 -->
-<h2>Step 2 — Select Instagram Account</h2>
-<div class="step-box">
-  <p>
-    After permission approval, SMART retrieves the user's Facebook Pages
-    and linked Instagram Business / Creator accounts using
-    <strong>pages_show_list</strong>.
-  </p>
-
-  <p class="note">
-    Accounts shown below are retrieved using <strong>pages_show_list</strong>
-    (mocked for App Review).
-  </p>
-
-  <div id="accountsContainer">
-    <p class="note">Connect first to load accounts.</p>
-  </div>
-</div>
-
-<!-- STEP 3 -->
-<h2>Step 3 — Preview Instagram Posts</h2>
-<div class="step-box">
-  <p>
-    SMART retrieves recent public Instagram posts using
-    <strong>instagram_basic</strong>.
-  </p>
-
-  <p class="note">
-    Posts below are mocked for App Review and represent public content only.
-  </p>
-
-  <div id="postsContainer">
-    <p class="note">Select an account to preview posts.</p>
-  </div>
-</div>
-
-<footer>
-  <hr />
-  <p>
-    Privacy Policy:
-    <a href="https://www.iubenda.com/privacy-policy/97067679" target="_blank">
-      https://www.iubenda.com/privacy-policy/97067679
-    </a>
-  </p>
-  <p>Contact: info@smartdocapp.com</p>
-  <p class="note">Users can revoke access at any time via Meta settings.</p>
-</footer>
-
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const hasAuth = params.has("code");
-
-  const accountsContainer = document.getElementById("accountsContainer");
-  const postsContainer = document.getElementById("postsContainer");
-
-  if (hasAuth) {
-    loadAccounts();
-  }
-
-  // ---- MOCK DATA FOR APP REVIEW ----
-  const MOCK_ACCOUNTS = [
-    { username: "nutrition_demo", page: "Nutrition Demo Page" },
-    { username: "health_creator", page: "Health Creator Page" }
-  ];
-
-  const MOCK_POSTS = [
-    {
-      media_url: "https://via.placeholder.com/600x400",
-      caption: "Balanced nutrition supports long-term health.",
-      timestamp: "2025-01-10T10:00:00Z",
-      permalink: "https://instagram.com/p/demo"
-    }
-  ];
-
-  function loadAccounts() {
-    accountsContainer.innerHTML = "";
-    MOCK_ACCOUNTS.forEach(acct => {
-      const div = document.createElement("div");
-      div.className = "account";
-      div.textContent = `@${acct.username} — ${acct.page}`;
-      div.onclick = () => loadPosts(div);
-      accountsContainer.appendChild(div);
-    });
-  }
-
-  function loadPosts(selectedEl) {
-    Array.from(accountsContainer.children).forEach(el =>
-      el.classList.remove("selected")
-    );
-    selectedEl.classList.add("selected");
-
-    postsContainer.innerHTML = "";
-    MOCK_POSTS.forEach(post => {
-      const div = document.createElement("div");
-      div.className = "post";
-      div.innerHTML = `
-        <div class="post-img" style="background-image:url('${post.media_url}')"></div>
-        <p><strong>Caption:</strong> ${post.caption}</p>
-        <p><strong>Date:</strong> ${new Date(post.timestamp).toLocaleString()}</p>
-        <p><a href="${post.permalink}" target="_blank">Open on Instagram ↗</a></p>
-      `;
-      postsContainer.appendChild(div);
-    });
-  }
-</script>
 
 </body>
 </html>
