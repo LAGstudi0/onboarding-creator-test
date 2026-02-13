@@ -18,13 +18,11 @@
     .loading { color: #888; font-style: italic; display: none; }
     .visible { display: block; }
     
-    /* Profile Styles */
     .profile-header { display: flex; align-items: center; }
-    .profile-avatar { width: 60px; height: 60px; background: #ddd; border-radius: 50%; margin-right: 15px; background-size: cover; }
+    .profile-avatar { width: 60px; height: 60px; background: #ddd; border-radius: 50%; margin-right: 15px; background-size: cover; background-position: center; }
     .profile-info strong { font-size: 18px; display: block; color: #000; }
     .profile-info span { color: #666; font-size: 14px; }
 
-    /* Post Grid */
     .post-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
     .post-item { border: 1px solid #eee; border-radius: 8px; overflow: hidden; background: white; }
     .post-img { width: 100%; height: 200px; background: #f0f0f0; background-size: cover; background-position: center; }
@@ -40,16 +38,10 @@
     <span>✓</span> Authorization Successful
   </div>
 
-  <h2>Connected Facebook Page</h2>
-  <p>Retrieving user's managed page...</p>
-  
-  <div id="loader1" class="loading visible">Connecting to Graph API...</div>
-  <div id="pagesContainer"></div>
-
   <h2>Instagram Business Profile</h2>
   <p>Fetching profile details...</p>
   
-  <div id="loader2" class="loading visible">Resolving Business Account ID...</div>
+  <div id="loader2" class="loading visible">Resolving Account ID...</div>
   <div id="profileContainer"></div>
 
   <h2>Recent Media</h2>
@@ -58,53 +50,23 @@
   <div id="postsContainer" class="post-grid"></div>
 
 <script>
-  // =======================================================
-  // ⚠️ ACTION REQUIRED: 
-  // REPLACE THE VALUES BELOW WITH YOUR REAL TEST ACCOUNT INFO
-  // =======================================================
   const REAL_USER_DATA = {
-    // 1. The EXACT name of the Facebook Page you select in the popup
-    facebookPageName: "Test api", 
-    
-    // 2. The EXACT Instagram Handle of that account
     instagramHandle: "paolomilutinovic", 
-    
-    // 3. The EXACT Bio on that Instagram account
     instagramBio: ".", 
-    
-    followers: 163, // Can be approximate
-    
-    // 4. Use REAL images. Copy image addresses from your test account or use generic placeholders
+    followers: 163,
+    // I cleaned the slashes for you so the image actually shows up
     posts: [
       { 
-        image: "./meal1.jpg", 
-        caption: " ",
+        image: "https://scontent.cdninstagram.com/v/t51.82787-15/602780575_18078937892235202_7902239008992471078_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=110&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiRkVFRC5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=FPntbhGh_9UQ7kNvwGat_Kl&_nc_oc=Adn-IDwOTyWQUdK_e8zb1-sYNrWnfAF-gdQCcJz387inTiXSeWBpXMd8KNQmW5oXvFRrPtowxfPrKXcL06BG-xbD&_nc_zt=23&_nc_ht=scontent.cdninstagram.com&edm=ANo9K5cEAAAA&_nc_gid=TMdo8hGWIMg1mPsQH1nlMA&_nc_tpa=Q5bMBQGsdinekrQ_XMw0wQO9j6cNLsSdmQaqA9ks29DWTLw1Ul7g5xMWYpsYYwL-skPh19v3cgmU_Gkgyw&oh=00_AftoOrXW0Vb7vVAS2o0BKfI2eHpVBf_aQCFSj3VNtELWuQ&oe=69944A1F", 
+        caption: "Graph api test",
         date: "Dec 18, 2025"
       },
     ]
   };
 
-  // --- SIMULATION LOGIC (Do not touch) ---
-  
-  // Simulate API Latency for Realism
-  setTimeout(() => {
-    document.getElementById('loader1').style.display = 'none';
-    
-    // Render Page List
-    const pageHTML = `
-      <div class="card">
-        <div style="color:green; font-weight:bold; font-size:12px; margin-bottom:5px;">● ACTIVE</div>
-        <div style="font-weight:bold; font-size:16px;">${REAL_USER_DATA.facebookPageName}</div>
-        <div style="font-size:12px; color:#777;">ID: 95219623130797</div>
-      </div>
-    `;
-    document.getElementById('pagesContainer').innerHTML = pageHTML;
-  }, 800);
-
+  // Simulate Profile Loading
   setTimeout(() => {
     document.getElementById('loader2').style.display = 'none';
-    
-    // Render Instagram Profile
     const profileHTML = `
       <div class="card profile-header">
         <div class="profile-avatar" style="background-image: url('https://ui-avatars.com/api/?name=${REAL_USER_DATA.instagramHandle}&background=random')"></div>
@@ -116,12 +78,11 @@
       </div>
     `;
     document.getElementById('profileContainer').innerHTML = profileHTML;
-  }, 1600); 
+  }, 1000); 
 
+  // Simulate Media Loading
   setTimeout(() => {
     document.getElementById('loader3').style.display = 'none';
-    
-    // Render Posts
     const postsDiv = document.getElementById('postsContainer');
     REAL_USER_DATA.posts.forEach(post => {
       const p = document.createElement('div');
@@ -135,8 +96,7 @@
       `;
       postsDiv.appendChild(p);
     });
-  }, 2400);
-
+  }, 1800);
 </script>
 </body>
 </html>

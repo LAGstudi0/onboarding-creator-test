@@ -28,7 +28,7 @@
       text-align: center;
     }
 
-    h1 { font-size: 24px; margin-bottom: 12px; color: #1877f2; }
+    h1 { font-size: 24px; margin-bottom: 12px; color: #222; }
     p  { color: #606770; line-height: 1.5; margin-bottom: 32px; font-size: 16px; }
 
     .btn {
@@ -36,16 +36,17 @@
       width: 100%;
       padding: 14px 0;
       border-radius: 6px;
-      background: #1877f2;
+      /* Instagram Brand Gradient */
+      background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
       color: white;
       font-weight: bold;
       font-size: 16px;
       text-decoration: none;
-      transition: background 0.2s;
+      transition: opacity 0.2s;
       box-sizing: border-box;
     }
 
-    .btn:hover { background: #166fe5; }
+    .btn:hover { opacity: 0.9; }
 
     .permissions-box {
       background: #f7f8fa;
@@ -58,7 +59,7 @@
     
     .permissions-box h3 { font-size: 14px; margin: 0 0 8px; color: #444; text-transform: uppercase; letter-spacing: 0.5px; }
     .permissions-box ul { margin: 0; padding-left: 20px; color: #555; font-size: 13px; }
-    .permissions-box li { margin-bottom: 4px; }
+    .permissions-box li { margin-bottom: 6px; }
 
     footer { margin-top: 24px; font-size: 12px; color: #888; }
     footer a { color: #888; text-decoration: none; }
@@ -68,26 +69,25 @@
 <body>
 
 <div class="container">
-  <h1>Connect to SMART</h1>
+  <h1>Connect Instagram</h1>
   <p>
-    Link your Instagram Business account to access your dashboard, analyze your posts, and view your profile statistics.
+    Link your Instagram Business account to display your feed, analyze your posts, and view your profile statistics.
   </p>
 
   <div class="permissions-box">
     <h3>Permissions Required</h3>
     <ul>
-      <li><strong>pages_show_list:</strong> To identify your Facebook Page.</li>
-      <li><strong>pages_read_engagement:</strong> To verify your Instagram connection.</li>
-      <li><strong>instagram_basic:</strong> To display your profile and posts.</li>
+      <li><strong>instagram_business_basic:</strong> To access your profile info and media (posts/reels).</li>
+      <li><strong>instagram_business_manage_insights:</strong> To view analytics for your content.</li>
     </ul>
   </div>
 
-  <a
-    class="btn"
-    href="https://www.facebook.com/v18.0/dialog/oauth?client_id=1411304363694964&redirect_uri=https%3A%2F%2Fonboarding-creator-test.vercel.app%2Fcallback.html&scope=pages_show_list,pages_read_engagement,instagram_basic&response_type=code"
-  >
-    Continue with Facebook
-  </a>
+<a
+  class="btn"
+  href="https://www.instagram.com/oauth/authorize?client_id=1386481416468384&redirect_uri=https%3A%2F%2Fonboarding-creator-test.vercel.app%2Fcallback.html&scope=instagram_business_basic%2Cinstagram_business_manage_insights&response_type=code"
+>
+  Continue with Instagram
+</a>
 
   <footer>
     SMART Integration Demo &bull; <a href="https://www.iubenda.com/privacy-policy/97067679" target="_blank">Privacy Policy</a>
